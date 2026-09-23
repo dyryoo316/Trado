@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import NotificationBell from "@/components/NotificationBell";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -21,13 +22,16 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-[18px] px-6 py-5">
-      <div>
-        <div className="text-lg font-extrabold text-text">
-          반가워요! {profile?.nickname ?? ""}님 👋
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-lg font-extrabold text-text">
+            반가워요! {profile?.nickname ?? ""}님 👋
+          </div>
+          <div className="mt-1 text-[13px] text-subtext">
+            오늘은 어떤 물건을 바꿔볼까요?
+          </div>
         </div>
-        <div className="mt-1 text-[13px] text-subtext">
-          오늘은 어떤 물건을 바꿔볼까요?
-        </div>
+        <NotificationBell />
       </div>
 
       <div className="flex flex-col items-center gap-4 rounded-3xl bg-muted px-[22px] py-7 text-center">

@@ -40,6 +40,11 @@ export default async function MatchSuccessPage({
   const otherItem = isUserA ? typedMatch.item_b : typedMatch.item_a;
   const otherProfile = isUserA ? typedMatch.profile_b : typedMatch.profile_a;
 
+  await supabase
+    .from("matches")
+    .update(isUserA ? { seen_by_a: true } : { seen_by_b: true })
+    .eq("id", typedMatch.id);
+
   const my = Array.isArray(myItem) ? myItem[0] : myItem;
   const other = Array.isArray(otherItem) ? otherItem[0] : otherItem;
   const otherNickname = Array.isArray(otherProfile)
