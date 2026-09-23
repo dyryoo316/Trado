@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+body{margin:0;background:#EDEFF2;font-family:'Pretendard',sans-serif;}
+a{color:#5C7299;text-decoration:none;}
+*{box-sizing:border-box;}
+::-webkit-scrollbar{width:0;height:0;}
+@keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:#EDEFF2;">
+<div style="position:relative;width:390px;height:844px;background:#ffffff;border-radius:44px;overflow:hidden;box-shadow:0 30px 60px rgba(30,40,60,0.18);border:8px solid #ffffff;">
+  <div style="padding:14px 20px 100px;display:flex;flex-direction:column;gap:10px;height:100%;overflow-y:auto;">
+    <div style="display:inline-flex;align-self:flex-start;background:#F4F5F7;color:#1A1A1A;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;">내 물건: 🎧 이어폰으로 교환 중</div>
+    <sc-if value="{{requestActive}}" hint-placeholder-val="{{true}}">
+    <div style="background:#E7ECF3;color:#5C7299;padding:10px 14px;border-radius:16px;font-size:12px;text-align:center;font-weight:600;">상대가 상품을 보여달라고 했어요 👀 아래 카드를 눌러 보여주세요</div>
+    </sc-if>
+    <div style="flex:1;min-height:0;border-radius:24px;background:radial-gradient(circle at 50% 30%,#F7F8F9,#E7ECF3);padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden;">
+      <div style="position:relative;width:220px;background:#fff;border-radius:22px;box-shadow:0 12px 26px rgba(30,40,60,0.16);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;">
+        <button onClick="{{toggleSheet}}" style="position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:999px;border:none;background:#F4F5F7;font-size:14px;cursor:pointer;color:#8A8F98;">⋯</button>
+        <div style="font-weight:800;font-size:19px;color:#1A1A1A;">{{currentCandidate.name}}</div>
+        <div style="font-size:88px;">{{currentCandidate.emoji}}</div>
+        <div style="display:flex;gap:5px;">
+          <span style="background:#F4F5F7;color:#1A1A1A;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;">{{currentCandidate.condition}}</span>
+          <span style="background:#F4F5F7;color:#1A1A1A;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;">{{currentCandidate.category}}</span>
+        </div>
+        <div style="color:#8A8F98;font-size:12px;">상대: {{currentCandidate.nickname}}</div>
+      </div>
+      <div style="background:#1A1A1A;color:#fff;font-size:11px;font-weight:800;padding:3px 14px;border-radius:999px;letter-spacing:0.5px;">VS</div>
+      <sc-if value="{{isMyCardSelected}}" hint-placeholder-val="{{false}}">
+      <div style="width:140px;background:#fff;border:2px solid #7792B5;border-radius:16px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;">
+        <div style="font-weight:700;font-size:13px;color:#1A1A1A;">{{mySelectedItem.name}}</div>
+        <div style="font-size:40px;">{{mySelectedItem.emoji}}</div>
+        <div style="color:#5C7299;font-size:10px;font-weight:700;">내 카드</div>
+      </div>
+      </sc-if>
+      <sc-if value="{{isMyCardEmpty}}" hint-placeholder-val="{{true}}">
+      <div style="width:140px;border:2px dashed #C9D6E8;border-radius:16px;padding:14px 8px;text-align:center;color:#7E8CA6;font-size:11px;">카드를 골라주세요</div>
+      </sc-if>
+      <div style="display:flex;gap:6px;">
+        <sc-for list="{{myItems}}" as="item" hint-placeholder-count="2">
+        <button onClick="{{item.onClick}}" style="{{item.style}}">{{item.emoji}}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-around;align-items:center;padding:2px 0;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <button onClick="{{openCancelConfirm}}" style="width:52px;height:52px;border-radius:999px;border:none;background:#FDEDED;font-size:22px;cursor:pointer;">❌</button>
+        <span style="font-size:11px;color:#8A8F98;">거래 취소</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <button onClick="{{openNote}}" style="width:52px;height:52px;border-radius:999px;border:none;background:#F4F5F7;font-size:22px;cursor:pointer;">➕</button>
+        <span style="font-size:11px;color:#8A8F98;">상품 추가</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <a href="5-매칭성공.dc.html" style="width:64px;height:64px;border-radius:999px;background:#7792B5;font-size:26px;box-shadow:0 10px 20px rgba(119,146,181,0.4);color:#fff;display:flex;align-items:center;justify-content:center;">⭕</a>
+        <span style="font-size:11px;color:#5C7299;font-weight:700;">거래성사</span>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:78px;background:#fff;border-top:1px solid #EDEEF0;display:flex;align-items:center;justify-content:space-around;">
+    <a href="2-홈.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#B4B8BF;"><span style="font-size:21px;">🏠</span><span style="font-size:11px;font-weight:700;">홈</span></a>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#7792B5;"><span style="font-size:21px;">🔄</span><span style="font-size:11px;font-weight:700;">매칭</span></div>
+    <a href="7-마이페이지.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#B4B8BF;"><span style="font-size:21px;">👤</span><span style="font-size:11px;font-weight:700;">MY</span></a>
+  </div>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+  <div style="position:absolute;inset:0;background:rgba(20,25,35,0.4);z-index:20;" onClick="{{closeSheet}}"></div>
+  </sc-if>
+<sc-if value="{{toastShow}}" hint-placeholder-val="{{false}}">
+  <div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;box-shadow:0 10px 20px rgba(0,0,0,0.2);white-space:nowrap;z-index:40;">{{toastText}}</div>
+  </sc-if>
+  <sc-if value="{{noteOpen}}" hint-placeholder-val="{{false}}">
+  <div style="position:absolute;inset:0;background:rgba(20,25,35,0.45);z-index:30;display:flex;align-items:center;justify-content:center;padding:28px;">
+    <div style="background:#fff;border-radius:24px;padding:24px;width:100%;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-weight:700;font-size:17px;color:#1A1A1A;">어떤 물건을 보고 싶나요?</div>
+      <div style="font-size:12px;color:#8A8F98;">간단히 적으면 상대가 읽고 다른 물건을 제시할 수 있어요</div>
+      <textarea placeholder="예: 책 말고 전자기기도 있나요?" value="{{noteText}}" onChange="{{onNoteTextChange}}" style="min-height:90px;padding:14px 16px;border-radius:14px;border:none;background:#F4F5F7;font-size:14px;font-family:'Pretendard',sans-serif;outline:none;color:#1A1A1A;resize:none;"></textarea>
+      <div style="display:flex;gap:10px;">
+        <button onClick="{{closeNote}}" style="flex:1;padding:14px;border:none;border-radius:16px;background:#F4F5F7;color:#8A8F98;font-size:15px;cursor:pointer;font-family:'Pretendard',sans-serif;">취소</button>
+        <button onClick="{{submitNote}}" style="flex:1;padding:14px;border:none;border-radius:16px;background:#7792B5;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;">보내기</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{cancelConfirmOpen}}" hint-placeholder-val="{{false}}">
+  <div style="position:absolute;inset:0;background:rgba(20,25,35,0.45);z-index:30;display:flex;align-items:center;justify-content:center;padding:28px;">
+    <div style="background:#fff;border-radius:24px;padding:28px 24px;width:100%;display:flex;flex-direction:column;gap:18px;text-align:center;">
+      <div style="font-weight:700;font-size:18px;color:#1A1A1A;line-height:1.4;">정말 거래를 하지 않으시겠어요?</div>
+      <div style="display:flex;gap:10px;">
+        <button onClick="{{closeCancelConfirm}}" style="flex:1;padding:14px;border:none;border-radius:16px;background:#F4F5F7;color:#8A8F98;font-size:15px;cursor:pointer;font-family:'Pretendard',sans-serif;">계속 볼게요</button>
+        <a href="2-홈.dc.html" style="flex:1;padding:14px;border-radius:16px;background:#7792B5;color:#fff;font-size:15px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;">거래 취소</a>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 28px;z-index:21;display:flex;flex-direction:column;gap:14px;animation:sheetUp 0.2s ease-out;box-shadow:0 -10px 30px rgba(0,0,0,0.15);">
+    <div style="width:36px;height:4px;background:#F4F5F7;border-radius:999px;align-self:center;"></div>
+    <sc-if value="{{isSheetMenu}}" hint-placeholder-val="{{true}}">
+    <button onClick="{{openDetailInSheet}}" style="text-align:left;padding:14px 16px;border:none;border-radius:16px;background:#F4F5F7;font-size:15px;color:#1A1A1A;cursor:pointer;font-family:'Pretendard',sans-serif;">상세 정보 보기</button>
+    <button onClick="{{openReportInSheet}}" style="text-align:left;padding:14px 16px;border:none;border-radius:16px;background:#F4F5F7;font-size:15px;color:#1A1A1A;cursor:pointer;font-family:'Pretendard',sans-serif;">신고하기</button>
+    <button onClick="{{blockCandidate}}" style="text-align:left;padding:14px 16px;border:none;border-radius:16px;background:#F4F5F7;font-size:15px;color:#E4574B;cursor:pointer;font-family:'Pretendard',sans-serif;">차단하기</button>
+    </sc-if>
+    <sc-if value="{{isSheetDetail}}" hint-placeholder-val="{{false}}">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:44px;">{{currentCandidate.emoji}}</span>
+      <div>
+        <div style="font-weight:800;font-size:17px;color:#1A1A1A;">{{currentCandidate.name}}</div>
+        <div style="font-size:12px;color:#8A8F98;">상대: {{currentCandidate.nickname}}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <span style="background:#F4F5F7;color:#1A1A1A;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">{{currentCandidate.condition}}</span>
+      <span style="background:#F4F5F7;color:#1A1A1A;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">{{currentCandidate.category}}</span>
+    </div>
+    <div style="background:#F4F5F7;border-radius:14px;padding:14px;font-size:13px;color:#1A1A1A;line-height:1.5;">{{currentCandidate.description}}</div>
+    <div style="font-size:12px;color:#B4B8BF;">{{currentCandidate.postedAt}} 등록</div>
+    </sc-if>
+    <sc-if value="{{isSheetReport}}" hint-placeholder-val="{{false}}">
+    <div style="font-weight:700;font-size:17px;color:#1A1A1A;">신고 사유 선택</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{reportReasons}}" as="opt" hint-placeholder-count="3">
+      <button onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</button>
+      </sc-for>
+    </div>
+    <button onClick="{{submitReport}}" style="padding:14px;border:none;border-radius:16px;background:#7792B5;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Pretendard',sans-serif;">신고하기</button>
+    </sc-if>
+  </div>
+  </sc-if>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    sheetOpen: false, sheetMode: 'menu', _reportReason: '', cancelConfirmOpen: false,
+    candidates: [
+      { emoji: '📚', name: '해리포터 전권', condition: '좋음', category: '도서', nickname: '책벌레77', description: '1~7권 전권 있어요. 표지 약간 눌린 부분 있고 속은 깨끗해요.', postedAt: '3일 전' },
+      { emoji: '⌨️', name: '기계식 키보드', condition: '거의 새것', category: '생활용품', nickname: '타건매니아', description: '텐키리스, 청축입니다. 두 달 정도 사용했고 키캡 교체 이력 없어요.', postedAt: '1일 전' },
+      { emoji: '👟', name: '런닝화 260', condition: '사용감 있음', category: '의류', nickname: '달림이', description: '260 사이즈, 주 2회 정도 신었어요. 밑창 마모 약간 있습니다.', postedAt: '5일 전' },
+      { emoji: '🎧', name: '무선 헤드폰', condition: '새것', category: '생활용품', nickname: '음악조아', description: '선물 받았는데 미사용이에요. 박스, 충전케이블 모두 있어요.', postedAt: '2일 전' }
+    ],
+    candidateIndex: 0,
+    myItemList: [
+      { emoji: '🎧', name: '무선 이어폰' },
+      { emoji: '📷', name: '필름카메라' }
+    ],
+    sentIndex: null,
+    requestActive: true,
+    toastShow: false, toastText: '',
+    noteOpen: false, noteText: ''
+  };
+  reasonList = ['허위 물건','부적절한 내용','기타'];
+  pillStyle(selected) {
+    return selected
+      ? 'padding:10px 16px;border-radius:999px;border:none;background:#7792B5;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Pretendard\',sans-serif;'
+      : 'padding:10px 16px;border-radius:999px;border:none;background:#F4F5F7;color:#1A1A1A;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Pretendard\',sans-serif;';
+  }
+  renderVals() {
+    const s = this.state;
+    const candidate = s.candidates[s.candidateIndex % s.candidates.length];
+    const reportReasons = this.reasonList.map(r => ({ label: r, style: this.pillStyle(s._reportReason === r), onClick: () => this.setState({ _reportReason: r }) }));
+    const myItems = s.myItemList.map((it, i) => ({
+      emoji: it.emoji, name: it.name,
+      style: `flex:none;width:44px;height:56px;border-radius:10px;background:#fff;border:2px solid ${s.sentIndex === i ? '#7792B5' : '#EDEEF0'};display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;`,
+      onClick: () => {
+        this.setState({ sentIndex: i, requestActive: false, toastShow: true, toastText: `${it.emoji} ${it.name}을(를) 보여줬어요!` });
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.setState({ toastShow: false }), 2200);
+      }
+    }));
+    return {
+      myItems,
+      isMyCardSelected: s.sentIndex !== null,
+      isMyCardEmpty: s.sentIndex === null,
+      mySelectedItem: s.sentIndex !== null ? s.myItemList[s.sentIndex] : { emoji: '', name: '' },
+      requestActive: s.requestActive,
+      toastShow: s.toastShow, toastText: s.toastText,
+      currentCandidate: candidate,
+      sheetOpen: s.sheetOpen,
+      isSheetMenu: s.sheetMode === 'menu',
+      isSheetReport: s.sheetMode === 'report',
+      isSheetDetail: s.sheetMode === 'detail',
+      toggleSheet: () => this.setState(st => ({ sheetOpen: !st.sheetOpen, sheetMode: 'menu' })),
+      closeSheet: () => this.setState({ sheetOpen: false }),
+      openReportInSheet: () => this.setState({ sheetMode: 'report', _reportReason: '' }),
+      openDetailInSheet: () => this.setState({ sheetMode: 'detail' }),
+      cancelConfirmOpen: s.cancelConfirmOpen,
+      openCancelConfirm: () => this.setState({ cancelConfirmOpen: true }),
+      closeCancelConfirm: () => this.setState({ cancelConfirmOpen: false }),
+      viewOther: () => this.setState(st => ({ candidateIndex: (st.candidateIndex + 1) % st.candidates.length })),
+      noteOpen: s.noteOpen,
+      noteText: s.noteText,
+      onNoteTextChange: e => this.setState({ noteText: e.target.value }),
+      openNote: () => this.setState({ noteOpen: true }),
+      closeNote: () => this.setState({ noteOpen: false }),
+      submitNote: () => {
+        if (!s.noteText.trim()) return;
+        this.setState(st => ({
+          noteOpen: false, noteText: '',
+          candidateIndex: (st.candidateIndex + 1) % st.candidates.length,
+          sentIndex: null, requestActive: true,
+          toastShow: true, toastText: '메모를 보냈어요! 상대가 다른 물건을 보여줬어요'
+        }));
+        clearTimeout(this._t);
+        this._t = setTimeout(() => this.setState({ toastShow: false }), 2400);
+      },
+      blockCandidate: () => this.setState(st => ({ candidateIndex: (st.candidateIndex + 1) % st.candidates.length, sheetOpen: false })),
+      reportReasons,
+      submitReport: () => this.setState(st => ({ candidateIndex: (st.candidateIndex + 1) % st.candidates.length, sheetOpen: false, sheetMode: 'menu' }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

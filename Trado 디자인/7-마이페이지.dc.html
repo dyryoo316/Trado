@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+body{margin:0;background:#EDEFF2;font-family:'Pretendard',sans-serif;}
+a{color:#5C7299;text-decoration:none;}
+*{box-sizing:border-box;}
+::-webkit-scrollbar{width:0;height:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:#EDEFF2;">
+<div style="position:relative;width:390px;height:844px;background:#ffffff;border-radius:44px;overflow:hidden;box-shadow:0 30px 60px rgba(30,40,60,0.18);border:8px solid #ffffff;display:flex;flex-direction:column;">
+  <div style="flex:none;display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0;font-size:13px;font-weight:700;color:#1A1A1A;">
+    <span>9:41</span>
+    <span style="font-size:12px;">📶 🔋</span>
+  </div>
+  <div style="padding:20px 24px 100px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;flex:1;min-height:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;border-radius:999px;background:#F4F5F7;display:flex;align-items:center;justify-content:center;font-size:22px;">🥦</div>
+        <div>
+          <div style="font-size:13px;color:#8A8F98;">안녕하세요</div>
+          <div style="font-weight:800;font-size:20px;color:#1A1A1A;">야채부락리 님</div>
+        </div>
+      </div>
+      <a href="1-로그인.dc.html" style="padding:9px 14px;border-radius:999px;background:#F4F5F7;color:#8A8F98;font-size:13px;font-weight:600;">로그아웃</a>
+    </div>
+    <div>
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;margin-bottom:10px;">내 물건</div>
+      <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;">
+        <sc-for list="{{myItems}}" as="item" hint-placeholder-count="2">
+        <div style="flex:none;width:84px;background:#F4F5F7;border-radius:16px;padding:14px 8px;text-align:center;">
+          <div style="font-size:32px;">{{item.emoji}}</div>
+          <div style="font-size:12px;color:#1A1A1A;margin-top:6px;">{{item.name}}</div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;margin-bottom:10px;">진행 중인 교환</div>
+      <div style="display:flex;align-items:center;gap:10px;background:#F4F5F7;border-radius:16px;padding:14px 16px;">
+        <span style="font-size:24px;">🎧</span>
+        <span style="color:#B4B8BF;">⇄</span>
+        <span style="font-size:24px;">📚</span>
+        <span style="font-size:12px;color:#5C7299;background:#E7ECF3;padding:4px 10px;border-radius:999px;font-weight:600;margin-left:auto;">직거래 준비중</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;margin-bottom:10px;">교환 완료</div>
+      <div style="background:#F4F5F7;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;">📷</span>
+          <span style="color:#B4B8BF;">⇄</span>
+          <span style="font-size:24px;">⌨️</span>
+          <span style="font-size:12px;color:#8A8F98;margin-left:auto;">택배 완료</span>
+        </div>
+        <sc-if value="{{hasReview}}" hint-placeholder-val="{{false}}">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="color:#F5B400;font-size:14px;">{{reviewStars}}</span>
+          <span style="font-size:12px;color:#8A8F98;">내가 남긴 후기</span>
+        </div>
+        </sc-if>
+        <sc-if value="{{hasNoReview}}" hint-placeholder-val="{{true}}">
+        <a href="8-후기작성.dc.html" style="align-self:flex-start;padding:8px 14px;border-radius:999px;background:#fff;color:#1A1A1A;font-size:12px;font-weight:700;box-shadow:0 2px 6px rgba(30,40,60,0.08);">⭐ 후기 쓰기</a>
+        </sc-if>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;margin-bottom:4px;">내 뱃지</div>
+      <div style="font-size:12px;color:#B4B8BF;margin-bottom:10px;">교환 활동으로 뱃지를 모아보세요</div>
+      <div style="background:#F4F5F7;border-radius:16px;padding:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <span style="font-size:30px;">🌪️</span>
+          <span style="font-size:11px;color:#1A1A1A;font-weight:700;background:#E7ECF3;padding:3px 8px;border-radius:999px;">토네이도 초보</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.4;">
+          <span style="font-size:30px;">🔄</span>
+          <span style="font-size:11px;color:#8A8F98;background:#EDEEF0;padding:3px 8px;border-radius:999px;">교환왕</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.4;">
+          <span style="font-size:30px;">⭐</span>
+          <span style="font-size:11px;color:#8A8F98;background:#EDEEF0;padding:3px 8px;border-radius:999px;">후기왕</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;margin-bottom:10px;">내 활동</div>
+      <div style="background:#F4F5F7;border-radius:16px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #EDEEF0;">
+          <span style="font-size:18px;">📦</span>
+          <span style="font-size:14px;color:#1A1A1A;font-weight:600;">내가 등록한 물건</span>
+          <span style="margin-left:auto;color:#B4B8BF;">›</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #EDEEF0;">
+          <span style="font-size:18px;">⭐</span>
+          <span style="font-size:14px;color:#1A1A1A;font-weight:600;">내가 남긴 후기</span>
+          <span style="margin-left:auto;color:#B4B8BF;">›</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:16px;">
+          <span style="font-size:18px;">🚫</span>
+          <span style="font-size:14px;color:#1A1A1A;font-weight:600;">차단한 사용자</span>
+          <span style="margin-left:auto;color:#B4B8BF;">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:78px;background:#fff;border-top:1px solid #EDEEF0;display:flex;align-items:center;justify-content:space-around;">
+    <a href="2-홈.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#B4B8BF;"><span style="font-size:21px;">🏠</span><span style="font-size:11px;font-weight:700;">홈</span></a>
+    <a href="4-매칭.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#B4B8BF;"><span style="font-size:21px;">🔄</span><span style="font-size:11px;font-weight:700;">매칭</span></a>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#7792B5;"><span style="font-size:21px;">👤</span><span style="font-size:11px;font-weight:700;">MY</span></div>
+  </div>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { reviewed: false, myItems: [{ emoji: '🎧', name: '무선 이어폰' }, { emoji: '📷', name: '필름카메라' }] };
+  componentDidMount() {
+    try {
+      const extra = JSON.parse(localStorage.getItem('trado_my_items') || '[]');
+      if (extra.length) this.setState(s => ({ myItems: [...s.myItems, ...extra] }));
+    } catch (e) {}
+  }
+  renderVals() {
+    return {
+      hasReview: this.state.reviewed,
+      hasNoReview: !this.state.reviewed,
+      reviewStars: '★★★★☆',
+      myItems: this.state.myItems
+    };
+  }
+}
+
+</script>
+</body>
+</html>

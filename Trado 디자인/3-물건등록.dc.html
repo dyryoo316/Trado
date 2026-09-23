@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#EDEFF2;font-family:'Pretendard',sans-serif;}
+a{color:#5C7299;text-decoration:none;}
+input::placeholder{color:#B4B8BF;}
+*{box-sizing:border-box;}
+::-webkit-scrollbar{width:0;height:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:#EDEFF2;">
+<div style="position:relative;width:390px;height:844px;background:#ffffff;border-radius:44px;overflow:hidden;box-shadow:0 30px 60px rgba(30,40,60,0.18);border:8px solid #ffffff;display:flex;flex-direction:column;">
+  <div style="flex:none;display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0;font-size:13px;font-weight:700;color:#1A1A1A;">
+    <span>9:41</span>
+    <span style="font-size:12px;">📶 🔋</span>
+  </div>
+  <div style="padding:20px 24px 40px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;flex:1;min-height:0;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="2-홈.dc.html" style="width:34px;height:34px;border-radius:999px;background:#F4F5F7;font-size:15px;display:flex;align-items:center;justify-content:center;color:#1A1A1A;">←</a>
+      <div style="font-weight:800;font-size:19px;color:#1A1A1A;">물건 등록</div>
+    </div>
+    <div>
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;">사진 등록</div>
+      <div style="font-size:12px;color:#B4B8BF;margin-top:2px;margin-bottom:10px;">대표 이미지 외 3개까지 등록할 수 있어요</div>
+      <image-slot id="reg-photo-main" shape="rounded" radius="18" style="width:100%;height:160px;" placeholder="대표 이미지 등록"></image-slot>
+      <div style="display:flex;gap:10px;margin-top:10px;">
+        <image-slot id="reg-photo-2" shape="rounded" radius="14" style="width:100%;aspect-ratio:1;" placeholder="사진 추가"></image-slot>
+        <image-slot id="reg-photo-3" shape="rounded" radius="14" style="width:100%;aspect-ratio:1;" placeholder="사진 추가"></image-slot>
+        <image-slot id="reg-photo-4" shape="rounded" radius="14" style="width:100%;aspect-ratio:1;" placeholder="사진 추가"></image-slot>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;">물건 이름</div>
+      <input type="text" placeholder="예: 무선 이어폰" value="{{itemName}}" onChange="{{onItemNameChange}}" style="padding:14px 16px;border-radius:14px;border:none;background:#F4F5F7;font-size:15px;font-family:'Pretendard',sans-serif;outline:none;color:#1A1A1A;"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="font-size:14px;color:#8A8F98;font-weight:500;">설명</div>
+      <textarea placeholder="물건 상태나 특징을 자세히 적어주세요" value="{{itemDescription}}" onChange="{{onItemDescriptionChange}}" style="min-height:100px;padding:14px 16px;border-radius:14px;border:none;background:#F4F5F7;font-size:15px;font-family:'Pretendard',sans-serif;outline:none;color:#1A1A1A;resize:none;"></textarea>
+    </div>
+    <div style="font-size:14px;color:#8A8F98;font-weight:500;">카테고리</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{categoryOptions}}" as="opt" hint-placeholder-count="5">
+      <button onClick="{{opt.onClick}}" style="{{opt.style}}">{{opt.label}}</button>
+      </sc-for>
+    </div>
+    <button onClick="{{submitRegister}}" style="{{submitButtonStyle}}">등록하기</button>
+  </div>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { itemName: '', itemDescription: '', selectedCategory: '' };
+  categoryList = ['굿즈','의류','도서','생활용품','기타'];
+
+  pillStyle(selected) {
+    return selected
+      ? 'padding:10px 16px;border-radius:999px;border:none;background:#7792B5;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Pretendard\',sans-serif;'
+      : 'padding:10px 16px;border-radius:999px;border:none;background:#F4F5F7;color:#1A1A1A;font-size:14px;font-weight:600;cursor:pointer;font-family:\'Pretendard\',sans-serif;';
+  }
+
+  renderVals() {
+    const s = this.state;
+    const categoryOptions = this.categoryList.map(c => ({ label: c, style: this.pillStyle(s.selectedCategory === c), onClick: () => this.setState({ selectedCategory: c }) }));
+    const canSubmit = !!(s.itemName && s.selectedCategory);
+    return {
+      categoryOptions,
+      itemName: s.itemName,
+      onItemNameChange: e => this.setState({ itemName: e.target.value }),
+      itemDescription: s.itemDescription,
+      onItemDescriptionChange: e => this.setState({ itemDescription: e.target.value }),
+      submitButtonStyle: `padding:16px;border:none;border-radius:999px;background:${canSubmit ? '#7792B5' : '#F4F5F7'};color:${canSubmit ? '#fff' : '#B4B8BF'};font-size:16px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;`,
+      submitRegister: () => {
+        if (!canSubmit) return;
+        try {
+          const extra = JSON.parse(localStorage.getItem('trado_my_items') || '[]');
+          extra.push({ emoji: '📦', name: s.itemName, description: s.itemDescription });
+          localStorage.setItem('trado_my_items', JSON.stringify(extra));
+        } catch (e) {}
+        window.location.href = '2-홈.dc.html';
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

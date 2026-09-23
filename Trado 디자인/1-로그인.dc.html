@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+body{margin:0;background:#EDEFF2;font-family:'Pretendard',sans-serif;}
+a{color:#5C7299;text-decoration:none;}
+input::placeholder{color:#B4B8BF;}
+*{box-sizing:border-box;}
+::-webkit-scrollbar{width:0;height:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;background:#EDEFF2;">
+<div style="position:relative;width:390px;height:844px;background:#ffffff;border-radius:44px;overflow:hidden;box-shadow:0 30px 60px rgba(30,40,60,0.18);border:8px solid #ffffff;">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px 0;font-size:13px;font-weight:700;color:#1A1A1A;">
+    <span>9:41</span>
+    <span style="font-size:12px;">📶 🔋</span>
+  </div>
+  <div style="padding:40px 28px 28px;display:flex;flex-direction:column;gap:22px;">
+    <div style="text-align:center;margin-bottom:4px;">
+      <div style="font-size:44px;">🌪️</div>
+      <div style="font-weight:800;font-size:26px;color:#1A1A1A;margin-top:6px;">Trado</div>
+    </div>
+    <div style="display:flex;background:#F4F5F7;border-radius:14px;padding:5px;gap:4px;">
+      <button onClick="{{selectLoginTab}}" style="{{loginTabStyle}}">로그인</button>
+      <button onClick="{{selectSignupTab}}" style="{{signupTabStyle}}">회원가입</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <label style="font-size:13px;color:#8A8F98;font-weight:500;">이메일</label>
+      <input type="email" placeholder="mallang@example.com" value="{{email}}" onChange="{{onEmailChange}}" style="padding:14px 16px;border-radius:14px;border:none;background:#F4F5F7;font-size:15px;font-family:'Pretendard',sans-serif;outline:none;color:#1A1A1A;"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <label style="font-size:13px;color:#8A8F98;font-weight:500;">비밀번호</label>
+      <input type="password" placeholder="••••••••" value="{{password}}" onChange="{{onPasswordChange}}" style="padding:14px 16px;border-radius:14px;border:none;background:#F4F5F7;font-size:15px;font-family:'Pretendard',sans-serif;outline:none;color:#1A1A1A;"/>
+    </div>
+    <sc-if value="{{isSignupTab}}" hint-placeholder-val="{{false}}">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <label style="font-size:13px;color:#8A8F98;font-weight:500;">닉네임</label>
+      <input type="text" placeholder="야채부락리" value="{{nickname}}" onChange="{{onNicknameChange}}" style="padding:14px 16px;border-radius:14px;border:none;background:#F4F5F7;font-size:15px;font-family:'Pretendard',sans-serif;outline:none;color:#1A1A1A;"/>
+    </div>
+    </sc-if>
+    <a href="2-홈.dc.html" style="margin-top:8px;padding:16px;border:none;border-radius:999px;background:#7792B5;color:#fff;font-size:16px;font-weight:700;cursor:pointer;text-align:center;">{{loginButtonLabel}}</a>
+  </div>
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { authMode: 'login', email: '', password: '', nickname: '' };
+  renderVals() {
+    const s = this.state;
+    return {
+      isSignupTab: s.authMode === 'signup',
+      loginTabStyle: `flex:1;padding:10px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:${s.authMode === 'login' ? '#fff' : 'transparent'};color:${s.authMode === 'login' ? '#1A1A1A' : '#8A8F98'};`,
+      signupTabStyle: `flex:1;padding:10px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:${s.authMode === 'signup' ? '#fff' : 'transparent'};color:${s.authMode === 'signup' ? '#1A1A1A' : '#8A8F98'};`,
+      selectLoginTab: () => this.setState({ authMode: 'login' }),
+      selectSignupTab: () => this.setState({ authMode: 'signup' }),
+      loginButtonLabel: s.authMode === 'signup' ? 'Trado 가입하기' : '로그인',
+      email: s.email, password: s.password, nickname: s.nickname,
+      onEmailChange: e => this.setState({ email: e.target.value }),
+      onPasswordChange: e => this.setState({ password: e.target.value }),
+      onNicknameChange: e => this.setState({ nickname: e.target.value })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
