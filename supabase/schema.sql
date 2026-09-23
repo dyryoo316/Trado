@@ -152,10 +152,10 @@ create policy "reviews_select_related" on reviews
 create policy "reviews_insert_own" on reviews
   for insert to authenticated with check (reviewer_id = auth.uid());
 
--- 매칭 성사 판정 (양쪽 O 상호 확인 후 matches 생성 + 두 물건 status 변경)
--- 호출자는 반드시 item_a의 소유자여야 하며, item_a -> item_b로 O 반응을
--- 미리 저장해둔 상태에서 호출한다. SECURITY DEFINER로 상대방 소유
--- item의 status까지 갱신한다 (RLS 상 본인 items만 update 가능하므로).
+-- 매칭 성사 판정 (O를 누르면 바로 성사 — 상호 확인 없음)
+-- 호출자는 반드시 item_a의 소유자여야 한다. SECURITY DEFINER로 상대방
+-- 소유 item의 status까지 갱신한다 (RLS 상 본인 items만 update 가능하므로).
+-- 이미 매칭된 물건이면(중복 클릭 등) 아무것도 하지 않고 null을 반환한다.
 drop function if exists create_match_if_mutual(uuid, uuid);
 create function create_match_if_mutual(p_item_a_id uuid, p_item_b_id uuid)
 returns uuid
@@ -166,10 +166,12 @@ as $$
 declare
   v_user_a uuid;
   v_user_b uuid;
+  v_status_a text;
+  v_status_b text;
   v_match_id uuid;
 begin
-  select owner_id into v_user_a from items where id = p_item_a_id;
-  select owner_id into v_user_b from items where id = p_item_b_id;
+  select owner_id, status into v_user_a, v_status_a from items where id = p_item_a_id;
+  select owner_id, status into v_user_b, v_status_b from items where id = p_item_b_id;
 
   if v_user_a is null or v_user_b is null then
     return null;
@@ -179,10 +181,7 @@ begin
     raise exception '본인 물건으로만 매칭을 확정할 수 있어요';
   end if;
 
-  if not exists (
-    select 1 from reactions
-    where from_item_id = p_item_b_id and to_item_id = p_item_a_id and type = 'O'
-  ) then
+  if v_status_a <> 'available' or v_status_b <> 'available' then
     return null;
   end if;
 
