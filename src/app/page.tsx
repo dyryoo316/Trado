@@ -45,7 +45,7 @@ export default async function HomePage() {
           새로운 물건을 만나요
         </div>
         <Image
-          src="/trado-char.png"
+          src="/trado-noback.png"
           alt="trado 마스코트"
           width={100}
           height={100}

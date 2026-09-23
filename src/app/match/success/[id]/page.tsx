@@ -65,7 +65,7 @@ export default async function MatchSuccessPage({
       <style>{`@keyframes trado-swirl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
       <Image
-        src="/trado-char.png"
+        src="/trado-noback.png"
         alt="trado 마스코트"
         width={96}
         height={96}

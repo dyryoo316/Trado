@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="flex min-h-[85vh] flex-col justify-center px-7">
       <div className="mb-8 text-center">
         <Image
-          src="/trado-char.png"
+          src="/trado-noback.png"
           alt="trado 마스코트"
           width={80}
           height={80}
