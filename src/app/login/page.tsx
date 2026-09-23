@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -57,7 +58,14 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[85vh] flex-col justify-center px-7">
       <div className="mb-8 text-center">
-        <div className="text-[44px]">🌪️</div>
+        <Image
+          src="/trado-char.png"
+          alt="trado 마스코트"
+          width={80}
+          height={80}
+          className="mx-auto"
+          priority
+        />
         <div className="mt-1.5 text-2xl font-extrabold text-text">trado</div>
       </div>
 

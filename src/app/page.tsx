@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -8,16 +10,18 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) redirect("/login");
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("nickname")
-    .eq("id", user!.id)
+    .eq("id", user.id)
     .single();
 
   const { data: myItems } = await supabase
     .from("items")
     .select("id, emoji, name, image_urls")
-    .eq("owner_id", user!.id)
+    .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
   return (
@@ -40,7 +44,12 @@ export default async function HomePage() {
           <br />
           새로운 물건을 만나요
         </div>
-        <div className="text-[56px] leading-none">🌪️</div>
+        <Image
+          src="/trado-char.png"
+          alt="trado 마스코트"
+          width={100}
+          height={100}
+        />
         <Link
           href="/match"
           className="w-full rounded-full bg-accent py-4 text-base font-bold text-white"

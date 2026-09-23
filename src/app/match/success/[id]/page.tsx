@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -63,7 +64,13 @@ export default async function MatchSuccessPage({
       />
       <style>{`@keyframes trado-swirl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
-      <div className="relative text-[52px]">🌪️</div>
+      <Image
+        src="/trado-char.png"
+        alt="trado 마스코트"
+        width={96}
+        height={96}
+        className="relative"
+      />
       <div className="relative text-2xl font-extrabold text-text">trado 성사!</div>
 
       <div className="relative flex items-center gap-5 rounded-3xl bg-surface px-6 py-6 shadow-lg">

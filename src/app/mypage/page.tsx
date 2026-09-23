@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "@/components/LogoutButton";
 import CompleteMatchButton from "@/components/CompleteMatchButton";
@@ -22,16 +23,19 @@ export default async function MyPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) redirect("/login");
+  const userId = user.id;
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("nickname")
-    .eq("id", user!.id)
+    .eq("id", userId)
     .single();
 
   const { data: myItems } = await supabase
     .from("items")
     .select("id, emoji, name, image_urls")
-    .eq("owner_id", user!.id)
+    .eq("owner_id", userId)
     .order("created_at", { ascending: false });
 
   const { data: matches } = await supabase
@@ -39,15 +43,15 @@ export default async function MyPage() {
     .select(
       "id, user_a_id, user_b_id, seen_by_a, seen_by_b, trade_method, completed_at, item_a:items!matches_item_a_id_fkey(name, emoji, image_urls), item_b:items!matches_item_b_id_fkey(name, emoji, image_urls)",
     )
-    .or(`user_a_id.eq.${user!.id},user_b_id.eq.${user!.id}`)
+    .or(`user_a_id.eq.${userId},user_b_id.eq.${userId}`)
     .order("created_at", { ascending: false });
 
   const typedMatchesRaw = (matches ?? []) as unknown as MatchRow[];
   const unseenAsA = typedMatchesRaw
-    .filter((m) => m.user_a_id === user!.id && !m.seen_by_a)
+    .filter((m) => m.user_a_id === userId && !m.seen_by_a)
     .map((m) => m.id);
   const unseenAsB = typedMatchesRaw
-    .filter((m) => m.user_b_id === user!.id && !m.seen_by_b)
+    .filter((m) => m.user_b_id === userId && !m.seen_by_b)
     .map((m) => m.id);
   if (unseenAsA.length > 0) {
     await supabase
@@ -65,14 +69,14 @@ export default async function MyPage() {
   const { data: myReviews } = await supabase
     .from("reviews")
     .select("match_id")
-    .eq("reviewer_id", user!.id);
+    .eq("reviewer_id", userId);
   const reviewedMatchIds = new Set((myReviews ?? []).map((r) => r.match_id));
 
   const inProgress = typedMatchesRaw.filter((m) => !m.completed_at);
   const completed = typedMatchesRaw.filter((m) => m.completed_at);
 
   function itemsOf(m: MatchRow) {
-    const isUserA = m.user_a_id === user!.id;
+    const isUserA = m.user_a_id === userId;
     const myItem = isUserA ? m.item_a : m.item_b;
     const otherItem = isUserA ? m.item_b : m.item_a;
     return {

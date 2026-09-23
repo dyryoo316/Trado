@@ -141,12 +141,25 @@ export default function NewItemPage() {
                 className="relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-muted text-[11px] text-faint"
               >
                 {slot ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={slot.previewUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={slot.previewUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handlePhotoChange(i, null);
+                      }}
+                      className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-text/70 text-[11px] leading-none text-white"
+                    >
+                      ✕
+                    </button>
+                  </>
                 ) : (
                   <span>사진 추가</span>
                 )}

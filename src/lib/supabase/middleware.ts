@@ -25,9 +25,15 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // 손상되었거나 만료된 인증 쿠키 등으로 getUser가 실패해도
+    // 사이트 전체가 죽지 않고 비로그인 상태로 취급한다.
+    user = null;
+  }
 
   const pathname = request.nextUrl.pathname;
 
