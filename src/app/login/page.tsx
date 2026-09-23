@@ -23,7 +23,7 @@ export default function LoginPage() {
     const supabase = createClient();
 
     if (tab === "login") {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -31,6 +31,19 @@ export default function LoginPage() {
         setError(error.message);
         setLoading(false);
         return;
+      }
+      if (data.user) {
+        const { data: existingProfile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("id", data.user.id)
+          .maybeSingle();
+        if (!existingProfile) {
+          await supabase.from("profiles").insert({
+            id: data.user.id,
+            nickname: email.split("@")[0],
+          });
+        }
       }
     } else {
       const { data, error } = await supabase.auth.signUp({ email, password });
@@ -119,7 +132,7 @@ export default function LoginPage() {
             <span className="text-[13px] font-medium text-subtext">닉네임</span>
             <input
               type="text"
-              placeholder="야채부락리"
+              placeholder="닉네임을 입력해주세요"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               required
