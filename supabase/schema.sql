@@ -71,6 +71,10 @@ create table blocks (
   primary key (blocker_id, blocked_id)
 );
 
+-- 테이블 권한 부여 ("Automatically expose new tables"를 꺼뒀으므로 직접 부여)
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on profiles, items, reactions, matches, reports, blocks to authenticated;
+
 -- RLS 활성화
 alter table profiles enable row level security;
 alter table items enable row level security;
