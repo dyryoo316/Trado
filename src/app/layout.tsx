@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import BottomTabBar from "@/components/BottomTabBar";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "trado",
@@ -15,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={spaceGrotesk.variable}>
+    <html lang="ko">
       <head>
         <link
           rel="stylesheet"
@@ -23,9 +17,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="antialiased">
-        <div className="mx-auto flex min-h-screen max-w-md flex-col bg-storm">
-          <main className="flex-1 overflow-y-auto pb-4">{children}</main>
-          <BottomTabBar />
+        <div className="flex min-h-screen justify-center bg-page sm:py-10">
+          <div className="flex w-full max-w-md flex-col bg-surface sm:min-h-[calc(100vh-5rem)] sm:overflow-hidden sm:rounded-[32px] sm:shadow-2xl">
+            <main className="flex-1 overflow-y-auto">{children}</main>
+            <BottomTabBar />
+          </div>
         </div>
       </body>
     </html>

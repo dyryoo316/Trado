@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 
 const TABS = [
   { href: "/", label: "홈", icon: "🏠" },
-  { href: "/match", label: "매칭", icon: "🌪️" },
-  { href: "/mypage", label: "마이", icon: "👤" },
+  { href: "/match", label: "매칭", icon: "🔄" },
+  { href: "/mypage", label: "MY", icon: "👤" },
 ] as const;
 
 export default function BottomTabBar() {
@@ -15,7 +15,7 @@ export default function BottomTabBar() {
   if (pathname === "/login") return null;
 
   return (
-    <nav className="sticky bottom-0 flex border-t border-mist bg-cloud">
+    <nav className="sticky bottom-0 flex h-[78px] items-center justify-around border-t border-border bg-surface">
       {TABS.map((tab) => {
         const active =
           tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
@@ -23,12 +23,12 @@ export default function BottomTabBar() {
           <Link
             key={tab.href}
             href={tab.href}
-            className={`flex flex-1 flex-col items-center gap-1 py-3 text-xs transition-colors ${
-              active ? "text-bolt" : "text-subtext"
+            className={`flex flex-col items-center gap-[3px] transition-colors ${
+              active ? "text-accent" : "text-faint"
             }`}
           >
             <span className="text-xl">{tab.icon}</span>
-            {tab.label}
+            <span className="text-[11px] font-bold">{tab.label}</span>
           </Link>
         );
       })}

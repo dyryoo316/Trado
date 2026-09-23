@@ -55,17 +55,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[85vh] flex-col justify-center px-6">
-      <h1 className="mb-8 text-center font-display text-3xl lowercase tracking-tight text-bolt">
-        trado
-      </h1>
+    <div className="flex min-h-[85vh] flex-col justify-center px-7">
+      <div className="mb-8 text-center">
+        <div className="text-[44px]">🌪️</div>
+        <div className="mt-1.5 text-2xl font-extrabold text-text">trado</div>
+      </div>
 
-      <div className="mb-6 flex rounded-2xl bg-cloud p-1">
+      <div className="mb-5 flex gap-1 rounded-2xl bg-muted p-1">
         <button
           type="button"
           onClick={() => setTab("login")}
-          className={`flex-1 rounded-xl py-2 text-sm font-medium transition-colors ${
-            tab === "login" ? "bg-bolt text-storm" : "text-subtext"
+          className={`flex-1 rounded-xl py-2.5 text-sm font-bold transition-colors ${
+            tab === "login" ? "bg-surface text-text" : "text-subtext"
           }`}
         >
           로그인
@@ -73,51 +74,60 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => setTab("signup")}
-          className={`flex-1 rounded-xl py-2 text-sm font-medium transition-colors ${
-            tab === "signup" ? "bg-bolt text-storm" : "text-subtext"
+          className={`flex-1 rounded-xl py-2.5 text-sm font-bold transition-colors ${
+            tab === "signup" ? "bg-surface text-text" : "text-subtext"
           }`}
         >
           회원가입
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        {tab === "signup" && (
+      <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-medium text-subtext">이메일</span>
           <input
-            type="text"
-            placeholder="닉네임"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            type="email"
+            placeholder="mallang@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
-            className="rounded-2xl bg-cloud px-4 py-3 text-text placeholder:text-subtext outline-none focus:ring-2 focus:ring-twister"
+            className="rounded-2xl bg-muted px-4 py-3.5 text-[15px] text-text placeholder:text-faint outline-none"
           />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-medium text-subtext">비밀번호</span>
+          <input
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            className="rounded-2xl bg-muted px-4 py-3.5 text-[15px] text-text placeholder:text-faint outline-none"
+          />
+        </label>
+        {tab === "signup" && (
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[13px] font-medium text-subtext">닉네임</span>
+            <input
+              type="text"
+              placeholder="야채부락리"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+              className="rounded-2xl bg-muted px-4 py-3.5 text-[15px] text-text placeholder:text-faint outline-none"
+            />
+          </label>
         )}
-        <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="rounded-2xl bg-cloud px-4 py-3 text-text placeholder:text-subtext outline-none focus:ring-2 focus:ring-twister"
-        />
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-          className="rounded-2xl bg-cloud px-4 py-3 text-text placeholder:text-subtext outline-none focus:ring-2 focus:ring-twister"
-        />
 
-        {error && <p className="text-sm text-flare">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="mt-2 rounded-2xl bg-bolt py-3 font-semibold text-storm transition-opacity disabled:opacity-60"
+          className="mt-2 rounded-full bg-accent py-4 text-base font-bold text-white transition-opacity disabled:opacity-60"
         >
-          {loading ? "처리 중..." : tab === "login" ? "로그인" : "가입하기"}
+          {loading ? "처리 중..." : tab === "login" ? "로그인" : "trado 가입하기"}
         </button>
       </form>
     </div>

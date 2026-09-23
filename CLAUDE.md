@@ -23,28 +23,34 @@
 1. **아래 "만들지 않는 기능"은 절대 추가하지 않는다.** 필요해 보여도 먼저 물어본다.
 2. 커밋/푸시 전에 반드시 `npm run build`를 실행해 타입 오류와 빌드 오류가 없는지 확인한다.
 3. 새 라이브러리는 꼭 필요할 때만 추가하고, 추가 전에 알린다.
-4. 물건 사진은 이모지로 대체한다. 이미지 업로드는 만들지 않는다.
+4. 물건 사진은 이모지를 기본으로 하되, Supabase Storage를 이용한 이미지 업로드(최대 4장)를 추가로 지원한다. 사진이 없으면 이모지가 목록 썸네일로 보인다.
 5. 모바일 우선 UI: 전체 화면을 `max-w-md mx-auto`로 감싸 390px 폭 기준으로 만든다. 데스크톱에서도 가운데 모바일 화면처럼 보이게 한다.
 6. 디자인은 아래 "디자인 시스템"을 따른다. Claude Design 시안이 제공되면 그 시안을 우선한다.
 7. 한 단계가 끝날 때마다 동작을 확인하고 다음 단계로 넘어간다. 여러 단계를 한 번에 만들지 않는다.
 
 ## 디자인 시스템
 
-- 다크 테마. 컬러 토큰은 Tailwind 설정 또는 CSS 변수로 정의해서 사용한다.
+- Claude Design 프로토타입(`Trado 디자인/`) 반영. 라이트 테마. 컬러 토큰은 Tailwind 설정 또는 CSS 변수로 정의해서 사용한다.
 
 | 토큰 | 값 | 용도 |
 |---|---|---|
-| storm | `#0F1226` | 메인 배경 |
-| cloud | `#1C2140` | 카드, 입력창 |
-| mist | `#2A3060` | 비활성 버튼, 구분선 |
-| bolt | `#C6FF3D` | O 버튼, 핵심 CTA, 로고 포인트 |
-| twister | `#7B5CFF` | + 버튼, 그래디언트 |
-| flare | `#FF5C7A` | X 버튼, 신고/차단 |
-| text | `#F4F5FF` | 기본 텍스트 |
-| subtext | `#8B90B8` | 보조 텍스트 |
+| page | `#EDEFF2` | 데스크톱에서 모바일 프레임 바깥 배경 |
+| surface | `#FFFFFF` | 카드, 화면 배경 |
+| muted | `#F4F5F7` | 입력창, 보조 버튼, 리스트 칩 배경 |
+| soft-accent | `#E7ECF3` | 안내 배너, 선택된 라벨 배경 |
+| accent | `#7792B5` | 주요 CTA, 활성 탭, O 버튼, 선택 테두리 |
+| accent-strong | `#5C7299` | 링크, 강조 텍스트 |
+| text | `#1A1A1A` | 기본 텍스트 |
+| subtext | `#8A8F98` | 보조 텍스트 |
+| faint | `#B4B8BF` | placeholder, 비활성 텍스트 |
+| border | `#EDEEF0` | 구분선, 비선택 테두리 |
+| danger | `#E4574B` | 차단 등 위험 텍스트 |
+| danger-soft | `#FDEDED` | X 버튼 배경 |
+| notify | `#FF5C5C` | 알림 배지 점 |
+| star | `#F5B400` | 후기 별점 |
 
-- 소용돌이 그래디언트(twister → bolt, conic-gradient)는 로고와 매칭 성공 화면에만 쓴다.
-- 폰트: 한글 Pretendard(jsDelivr CDN), 로고와 제목 Space Grotesk(`next/font/google`)
+- 소용돌이 그래디언트(accent 계열 conic-gradient)는 로고와 매칭 성공 화면에만 쓴다.
+- 폰트: Pretendard(jsDelivr CDN) 하나로 통일한다 (로고 포함, 별도 display 폰트 없음).
 - 로고: 소문자 `trado`
 - 모서리 16 ~ 24px, 액션 버튼은 원형, 매칭 카드 더미는 -2~2도 기울여 쌓는다.
 - 모션: 카드가 회전하며 들어오고, X를 누르면 회전하며 옆으로 날아간다. 매칭 성공 시 두 물건이 자리를 바꾸는 애니메이션. CSS transition/keyframes로만 구현한다.
@@ -65,10 +71,11 @@
 - 신고 / 차단
 - 거래 방법 선택 화면 (직거래 / 택배)
 - 마이페이지
+- 별점 후기 (교환 완료 후 상대에게 별점 1~5 + 텍스트 후기)
 
 ### 만들지 않는 기능
 
-실제 결제 연동, 배송 연동, 위치 인증, 실시간 채팅, AI 추천, 가격 평가, 이메일 인증, 브라우저 푸시 알림, 이미지 업로드, 관리자 화면
+실제 결제 연동, 배송 연동, 위치 인증, 실시간 채팅(매칭 화면 내 메모/메시지 전송 포함), AI 추천, 가격 평가, 이메일 인증, 브라우저 푸시 알림, 배지/뱃지 시스템, 관리자 화면
 
 ## 버튼 3개의 의미
 
@@ -94,6 +101,8 @@ create table items (
   owner_id uuid not null references profiles(id) on delete cascade,
   name text not null,
   emoji text not null default '📦',
+  description text,
+  image_urls text[] not null default '{}',
   category text not null check (category in ('굿즈','의류','도서','생활용품','기타')),
   condition text not null check (condition in ('새것','거의 새것','좋음','사용감 있음')),
   wanted_categories text[] not null default '{}',
@@ -123,6 +132,7 @@ create table matches (
   seen_by_b boolean not null default false,
   trade_method text check (trade_method in ('직거래','택배')),
   trade_detail jsonb,
+  completed_at timestamptz,
   created_at timestamptz default now()
 );
 
@@ -143,7 +153,20 @@ create table blocks (
   created_at timestamptz default now(),
   primary key (blocker_id, blocked_id)
 );
+
+-- 후기
+create table reviews (
+  id uuid primary key default gen_random_uuid(),
+  match_id uuid not null references matches(id) on delete cascade,
+  reviewer_id uuid not null references profiles(id),
+  target_user_id uuid not null references profiles(id),
+  rating int not null check (rating between 1 and 5),
+  comment text,
+  created_at timestamptz default now()
+);
 ```
+
+**Storage:** `item-images` 공개 버킷(사용자 폴더 `{user_id}/...`에만 본인이 쓰기 가능, 읽기는 공개).
 
 **RLS:** 모든 테이블에 RLS를 켜고, 로그인한 사용자는 `profiles`, `items` 전체 조회 가능, 나머지는 본인 관련 행만 조회 가능하게 한다. 쓰기는 본인 행만 허용한다. 매칭 성사처럼 두 사용자에게 걸친 처리는 서버 액션에서 수행한다.
 
@@ -190,11 +213,12 @@ create table blocks (
 | `/match` | 매칭 ⭐ | 상단 "내 물건: 🧸 곰 인형으로 교환 중"(변경 가능), 큰 상대 물건 카드, X / + / O 버튼 |
 | `/match/success/[id]` | 매칭 성공 | 소용돌이 배경, trado 성사!, 내 물건 ⇄ 상대 물건, [거래 방법 정하기] |
 | `/trade/[matchId]` | 거래 방법 선택 | 직거래(희망 장소, 시간) / 택배(주소) → `matches.trade_method`, `trade_detail`에 저장 |
-| `/mypage` | 마이페이지 | 내 물건, 성사된 교환(거래 방법 포함), 로그아웃 |
+| `/mypage` | 마이페이지 | 내 물건, 진행중/완료된 교환(거래 방법 포함), 후기 쓰기 진입점, 로그아웃 |
+| `/matches/[matchId]/review` | 후기 작성 | 별점(1~5) + 텍스트 → `reviews`에 저장 |
 
 - 로그인하지 않은 사용자는 `/login`으로 보낸다.
 - 하단 탭바: 홈 / 매칭 / 마이
-- 위 7개 화면 외에 스플래시, 온보딩, 알림 목록 등은 만들지 않는다.
+- 위 8개 화면 외에 스플래시, 온보딩, 알림 목록, 배지 등은 만들지 않는다.
 
 ## 만드는 순서
 
@@ -209,6 +233,7 @@ create table blocks (
 7. **신고 / 차단**
 8. **거래 방법 선택**
 9. **마이페이지 정리:** 성사된 교환 목록
+10. **후기 작성:** 별점 + 텍스트
 
 14:30 기준으로 끝나지 않은 추가 기능은 빼고 배포 안정화와 시연 준비에 집중한다.
 
