@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import LogoutButton from "@/components/LogoutButton";
 
-export default async function HomePage() {
+export default async function MyPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,39 +20,24 @@ export default async function HomePage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="flex flex-col gap-[18px] px-6 py-5">
-      <div>
-        <div className="text-lg font-extrabold text-text">
-          반가워요! {profile?.nickname ?? ""}님 👋
+    <div className="flex flex-col gap-5 px-6 py-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-xl">
+            🥦
+          </div>
+          <div>
+            <div className="text-[13px] text-subtext">안녕하세요</div>
+            <div className="text-xl font-extrabold text-text">
+              {profile?.nickname ?? ""} 님
+            </div>
+          </div>
         </div>
-        <div className="mt-1 text-[13px] text-subtext">
-          오늘은 어떤 물건을 바꿔볼까요?
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 rounded-3xl bg-muted px-[22px] py-7 text-center">
-        <div className="text-xl font-extrabold leading-snug text-text">
-          물건 하나로
-          <br />
-          새로운 물건을 만나요
-        </div>
-        <div className="text-[56px] leading-none">🌪️</div>
-        <Link
-          href="/match"
-          className="w-full rounded-full bg-accent py-4 text-base font-bold text-white"
-        >
-          토네이도 돌리기
-        </Link>
-        <Link
-          href="/items/new"
-          className="w-full rounded-full bg-surface py-3.5 text-[15px] font-bold text-text shadow-sm"
-        >
-          ＋ 물건 등록
-        </Link>
+        <LogoutButton />
       </div>
 
       <div>
-        <div className="mb-2.5 text-sm font-medium text-subtext">내 물건 목록</div>
+        <div className="mb-2.5 text-sm font-medium text-subtext">내 물건</div>
         {myItems && myItems.length > 0 ? (
           <div className="flex gap-3 overflow-x-auto pb-1">
             {myItems.map((item) => (
