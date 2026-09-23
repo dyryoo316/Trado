@@ -40,6 +40,11 @@ export default function MatchPage() {
   const [loading, setLoading] = useState(true);
   const [empty, setEmpty] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetMode, setSheetMode] = useState<"menu" | "report">("menu");
+  const [reportReason, setReportReason] = useState<string | null>(null);
+
+  const REPORT_REASONS = ["허위 물건", "부적절한 내용", "기타"] as const;
 
   function showToast(message: string) {
     setToast(message);
@@ -193,6 +198,37 @@ export default function MatchPage() {
     await loadCandidate(selectedItemId, userId);
   }
 
+  function closeSheet() {
+    setSheetOpen(false);
+    setSheetMode("menu");
+    setReportReason(null);
+  }
+
+  async function handleBlock() {
+    if (!candidate || !userId) return;
+    if (!window.confirm("이 사용자를 차단할까요? 이후 이 사용자의 물건은 더 이상 보이지 않아요.")) {
+      return;
+    }
+    await supabase
+      .from("blocks")
+      .insert({ blocker_id: userId, blocked_id: candidate.owner_id });
+    closeSheet();
+    await loadCandidate(selectedItemId, userId);
+  }
+
+  async function submitReport() {
+    if (!candidate || !userId || !reportReason) return;
+    await supabase.from("reports").insert({
+      reporter_id: userId,
+      target_user_id: candidate.owner_id,
+      target_item_id: candidate.id,
+      reason: reportReason,
+    });
+    closeSheet();
+    showToast("신고가 접수되었어요");
+    await loadCandidate(selectedItemId, userId);
+  }
+
   if (myItems.length === 0 && !loading) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center gap-3 px-6 text-center">
@@ -231,7 +267,13 @@ export default function MatchPage() {
             지금은 교환할 물건이 없어요
           </p>
         ) : candidate ? (
-          <div className="mt-2 flex w-[220px] flex-col items-center gap-1.5 rounded-[22px] bg-surface px-4 py-5 shadow-lg">
+          <div className="relative mt-2 flex w-[220px] flex-col items-center gap-1.5 rounded-[22px] bg-surface px-4 py-5 shadow-lg">
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-muted text-sm text-subtext"
+            >
+              ⋯
+            </button>
             <div className="text-lg font-extrabold text-text">{candidate.name}</div>
             {candidate.image_urls?.[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -294,6 +336,60 @@ export default function MatchPage() {
         <div className="absolute left-1/2 top-4 -translate-x-1/2 whitespace-nowrap rounded-full bg-text px-5 py-3 text-sm text-white shadow-lg">
           {toast}
         </div>
+      )}
+
+      {sheetOpen && (
+        <>
+          <div
+            className="absolute inset-0 z-20 bg-text/40"
+            onClick={closeSheet}
+          />
+          <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col gap-3.5 rounded-t-3xl bg-surface p-5 pb-7 shadow-2xl">
+            <div className="mx-auto h-1 w-9 rounded-full bg-muted" />
+            {sheetMode === "menu" ? (
+              <>
+                <button
+                  onClick={() => setSheetMode("report")}
+                  className="rounded-2xl bg-muted px-4 py-3.5 text-left text-[15px] text-text"
+                >
+                  신고하기
+                </button>
+                <button
+                  onClick={handleBlock}
+                  className="rounded-2xl bg-muted px-4 py-3.5 text-left text-[15px] text-danger"
+                >
+                  차단하기
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-[17px] font-bold text-text">신고 사유 선택</div>
+                <div className="flex flex-wrap gap-2">
+                  {REPORT_REASONS.map((reason) => (
+                    <button
+                      key={reason}
+                      onClick={() => setReportReason(reason)}
+                      className={`rounded-full px-4 py-2.5 text-sm font-semibold ${
+                        reportReason === reason
+                          ? "bg-accent text-white"
+                          : "bg-muted text-text"
+                      }`}
+                    >
+                      {reason}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={submitReport}
+                  disabled={!reportReason}
+                  className="rounded-2xl bg-accent py-3.5 text-[15px] font-bold text-white disabled:bg-muted disabled:text-faint"
+                >
+                  신고하기
+                </button>
+              </>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
