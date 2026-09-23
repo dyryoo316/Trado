@@ -57,16 +57,6 @@ export default function MatchPage() {
       setEmpty(false);
       setCandidate(null);
 
-      const { data: item } = await supabase
-        .from("items")
-        .select("wanted_categories")
-        .eq("id", itemId)
-        .single();
-      if (!item) {
-        setLoading(false);
-        return;
-      }
-
       const { data: reacted } = await supabase
         .from("reactions")
         .select("to_item_id")
@@ -92,8 +82,7 @@ export default function MatchPage() {
           "id, name, emoji, description, image_urls, category, condition, owner_id, profiles(nickname)",
         )
         .neq("owner_id", uid)
-        .eq("status", "available")
-        .in("category", item.wanted_categories);
+        .eq("status", "available");
 
       if (reactedIds.length > 0) {
         query = query.not("id", "in", `(${reactedIds.join(",")})`);
