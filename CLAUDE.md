@@ -186,10 +186,10 @@ create table reviews (
 
 ### 매칭 성사 판정 (O를 눌렀을 때)
 
-1. `reactions`에 A → B, type O 저장
-2. `reactions`에 B → A, type O가 이미 있는지 확인
-3. 있으면 `matches`에 저장, A와 B의 `status`를 `matched`로 변경, 매칭 성공 화면으로 이동
-4. 없으면 다음 물건으로 넘어감
+1. `reactions`에 A → B, type O 저장 (클라이언트에서 본인 반응이라 RLS 통과)
+2. 서버 액션에서 Postgres 함수 `create_match_if_mutual(item_a_id, item_b_id)` 호출 — 상대방 소유 물건의 status까지 바꿔야 해서 SECURITY DEFINER 함수로 처리한다 (호출자가 item_a 소유자인지 내부에서 검증)
+3. 함수가 `reactions`에 B → A, type O가 있는지 확인 → 있으면 `matches` 생성 + A, B `status`를 `matched`로 변경 후 match id 반환, 매칭 성공 화면으로 이동
+4. 없으면 (null 반환) 다음 물건으로 넘어감
 
 ### 앱 안 알림
 

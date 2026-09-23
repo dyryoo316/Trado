@@ -152,6 +152,52 @@ create policy "reviews_select_related" on reviews
 create policy "reviews_insert_own" on reviews
   for insert to authenticated with check (reviewer_id = auth.uid());
 
+-- 매칭 성사 판정 (양쪽 O 상호 확인 후 matches 생성 + 두 물건 status 변경)
+-- 호출자는 반드시 item_a의 소유자여야 하며, item_a -> item_b로 O 반응을
+-- 미리 저장해둔 상태에서 호출한다. SECURITY DEFINER로 상대방 소유
+-- item의 status까지 갱신한다 (RLS 상 본인 items만 update 가능하므로).
+drop function if exists create_match_if_mutual(uuid, uuid);
+create function create_match_if_mutual(p_item_a_id uuid, p_item_b_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_a uuid;
+  v_user_b uuid;
+  v_match_id uuid;
+begin
+  select owner_id into v_user_a from items where id = p_item_a_id;
+  select owner_id into v_user_b from items where id = p_item_b_id;
+
+  if v_user_a is null or v_user_b is null then
+    return null;
+  end if;
+
+  if auth.uid() is distinct from v_user_a then
+    raise exception '본인 물건으로만 매칭을 확정할 수 있어요';
+  end if;
+
+  if not exists (
+    select 1 from reactions
+    where from_item_id = p_item_b_id and to_item_id = p_item_a_id and type = 'O'
+  ) then
+    return null;
+  end if;
+
+  insert into matches (item_a_id, item_b_id, user_a_id, user_b_id)
+  values (p_item_a_id, p_item_b_id, v_user_a, v_user_b)
+  returning id into v_match_id;
+
+  update items set status = 'matched' where id in (p_item_a_id, p_item_b_id);
+
+  return v_match_id;
+end;
+$$;
+
+grant execute on function create_match_if_mutual(uuid, uuid) to authenticated;
+
 -- Storage: 물건 사진 버킷 (공개 읽기, 본인 폴더에만 쓰기)
 insert into storage.buckets (id, name, public)
 values ('item-images', 'item-images', true)

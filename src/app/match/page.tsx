@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { tryFinalizeMatch } from "./actions";
 
 type MyItem = {
   id: string;
@@ -30,6 +32,7 @@ function nicknameOf(candidate: Candidate) {
 
 export default function MatchPage() {
   const supabase = createClient();
+  const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   const [myItems, setMyItems] = useState<MyItem[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
@@ -175,6 +178,16 @@ export default function MatchPage() {
         return;
       }
       showToast("이 사용자의 다른 물건이 없어요");
+      await loadCandidate(selectedItemId, userId);
+      return;
+    }
+
+    if (type === "O") {
+      const matchId = await tryFinalizeMatch(selectedItemId, candidate.id);
+      if (matchId) {
+        router.push(`/match/success/${matchId}`);
+        return;
+      }
     }
 
     await loadCandidate(selectedItemId, userId);
