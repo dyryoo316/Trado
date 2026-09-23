@@ -12,6 +12,8 @@ const TABS = [
 export default function BottomTabBar() {
   const pathname = usePathname();
 
+  if (pathname === "/login") return null;
+
   return (
     <nav className="sticky bottom-0 flex border-t border-mist bg-cloud">
       {TABS.map((tab) => {
